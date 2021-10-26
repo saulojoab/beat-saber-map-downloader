@@ -1,40 +1,35 @@
-import React from 'react';
-import icon from '../../../../assets/icon.png';
+import React, { useState, useEffect } from 'react';
 
 import styles from './index.module.scss';
 
+import { SearchItem, SongCard } from 'renderer/components/SongCard';
+
 export default function Main() {
+  const [data, setData] = useState<SearchItem[] | undefined>(undefined);
+
+  async function getData() {
+    const res = await fetch(
+      'https://beatsaver.com/api/search/text/0?sortOrder=Relevance&q=porter'
+    );
+    const jsonData = await res.json();
+
+    setData(jsonData.docs);
+  }
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
   return (
-    <div>
-      <div className={styles.Hello}>
-        <img width="200px" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className={styles.Hello}>
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs, bitch
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
+    <div className={styles.container}>
+      <div className={styles.searchResults}>
+        {data?.map((searchItem) => (
+          <SongCard key={searchItem.id} item={searchItem} />
+        ))}
       </div>
     </div>
   );
