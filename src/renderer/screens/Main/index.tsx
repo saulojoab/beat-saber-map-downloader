@@ -1,36 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-import styles from './index.module.scss';
-
-import { SearchItem, SongCard } from 'renderer/components/SongCard';
+import { useHistory } from 'react-router-dom';
 
 export default function Main() {
-  const [data, setData] = useState<SearchItem[] | undefined>(undefined);
-
-  async function getData() {
-    const res = await fetch(
-      'https://beatsaver.com/api/search/text/0?sortOrder=Relevance&q=porter'
-    );
-    const jsonData = await res.json();
-
-    setData(jsonData.docs);
-  }
-
-  useEffect(() => {
-    getData();
-  }, []);
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
+  const history = useHistory();
 
   return (
-    <div className={styles.container}>
-      <div className={styles.searchResults}>
-        {data?.map((searchItem) => (
-          <SongCard key={searchItem.id} item={searchItem} />
-        ))}
-      </div>
+    <div>
+      <button onClick={() => history.push('/search')}>ir pra busca</button>
     </div>
   );
 }
