@@ -9,7 +9,7 @@ export default function Main() {
 
   async function getData() {
     const res = await fetch(
-      'https://beatsaver.com/api/search/text/0?sortOrder=Relevance&q=porter'
+      'https://beatsaver.com/api/search/text/0?sortOrder=Rating&q=porter'
     );
     const jsonData = await res.json();
 
