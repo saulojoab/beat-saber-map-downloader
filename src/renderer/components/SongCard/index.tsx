@@ -74,7 +74,11 @@ export const SongCard: React.FC<SongCardProps> = ({ item }) => {
       </div>
       <div className={styles.songCover}>
         <div className={styles.blackSquare} />
-        <img className={styles.image} src={item.versions[0].coverURL} />
+        <img
+          className={styles.image}
+          alt={`${item.name} album cover`}
+          src={item.versions[0].coverURL}
+        />
       </div>
     </div>
   );

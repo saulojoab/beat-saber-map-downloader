@@ -11,11 +11,14 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, BrowserView } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import electronDl, { download } from 'electron-dl';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+
+electronDl();
 
 export default class AppUpdater {
   constructor() {
@@ -26,6 +29,21 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+
+ipcMain.on('download-item', async (event, { url, properties }) => {
+  event.sender.send('download-success', url);
+  console.log(url);
+  const win = BrowserWindow.getFocusedWindow() || new BrowserView();
+  console.log(
+    await download(win, url, {
+      ...properties,
+      onProgress: (progress) =>
+        mainWindow?.webContents.send('download-progress', progress),
+      onCompleted: (item) =>
+        mainWindow?.webContents.send('download-completed', item),
+    })
+  );
+});
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
@@ -78,7 +96,8 @@ const createWindow = async () => {
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: false,
     },
   });
 
